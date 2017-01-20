@@ -8,6 +8,10 @@ volumes:
   mongodata:
     driver: local
 
+networks:
+  elasticnet:
+    driver: bridge
+
 services:
   mongodb:
     image: mongo:3
@@ -15,8 +19,9 @@ services:
     volumes:
       - "mongodata:/data"
       - "./mongo:/conf/"
+
   elasticsearch:
-    image: elasticsearch:5
+    image: elasticsearch:2
     volumes:
       - "esdata:/usr/share/elasticsearch/data"
     environment:
@@ -33,6 +38,7 @@ services:
         soft: 65536
         hard: 65536
     mem_limit: 1536m
+
   graylog:
     image: graylog2/server:latest
     environment:
@@ -42,6 +48,7 @@ services:
       GRAYLOG_MONGODB_URI: mongodb://mongodb.service/graylog
       GRAYLOG_MONGODB_MAX_CONNECTIONS: 100
       GRAYLOG_MONGODB_THREADS_ALLOWED_TO_BLOCK_MULTIPLIER: 5
+      GRAYLOG_ELASTICSEARCH_CLUSTER_NAME: graylog
     volumes:
       - "graylogdata:/opt/graylog/data"
       - "./plugin/:/opt/graylog/plugin/"
