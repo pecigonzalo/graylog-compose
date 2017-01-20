@@ -8,10 +8,6 @@ volumes:
   mongodata:
     driver: local
 
-networks:
-  elasticnet:
-    driver: bridge
-
 services:
   mongodb:
     image: mongo:3
@@ -22,14 +18,16 @@ services:
 
   elasticsearch:
     image: elasticsearch:2
+    command: "elasticsearch -Des.cluster.name=graylog"
     volumes:
       - "esdata:/usr/share/elasticsearch/data"
+      - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro"
+      - "./elasticsearch/logging.yml:/usr/share/elasticsearch/config/logging.yml:ro"
     environment:
-      cluster.name: "graylog"
-      discovery.zen.ping.unicast.hosts: "[\"elasticsearch:9300\"]"
-      path.repo: "[\"/usr/share/elasticsearch/data/\"]"
-      bootstrap.memory_lock: "true"
-      ES_JAVA_OPTS: -Xms1g -Xmx1g
+      ES_MAX_MEM: 1g
+    ports:
+     - "9200:9200"
+     - "9300:9300"
     ulimits:
       memlock:
         soft: -1
@@ -66,15 +64,15 @@ services:
   # I created a module to send Docker logs
   # from logspout to Graylog:
   # https://github.com/micahhausler/logspout-gelf
-  # logspout:
-  #   image: "micahhausler/logspout:gelf"
-  #   hostname: logspout
-  #   command: "gelf://graylog:12201"
-  #   environment:
-  #     LOGSPOUT: ignore
-  #   volumes:
-  #     - "/var/run/docker.sock:/var/run/docker.sock"
-  #   links:
-  #     - "graylog:graylog"
-  #   ports:
-  #     - "8000:80"
+  logspout:
+    image: "micahhausler/logspout:gelf"
+    hostname: logspout
+    command: "gelf://graylog:12201"
+    environment:
+      LOGSPOUT: ignore
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    links:
+      - "graylog:graylog"
+    ports:
+      - "8000:80"
