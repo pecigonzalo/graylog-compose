@@ -61,7 +61,7 @@ services:
   # Based on Logspout by Gliderlabs
   # https://github.com/gliderlabs/logspout
   #
-  # I created a module to send Docker logs
+  # micahhausler created a module to send Docker logs
   # from logspout to Graylog:
   # https://github.com/micahhausler/logspout-gelf
   logspout:
