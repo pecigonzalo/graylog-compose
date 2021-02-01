@@ -55,8 +55,8 @@ services:
       - "mongodb:mongodb.service"
     ports:
       - "9000:9000"
-      - "12201/udp:12201/udp"
-      - "1514/udp:1514/udp"
+      - "12201:12201/udp"
+      - "1514:1514/udp"
 
   # Based on Logspout by Gliderlabs
   # https://github.com/gliderlabs/logspout
